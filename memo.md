@@ -2,6 +2,27 @@
 
 
 ## 第5回用メモ
+## 用いるディレクトリの中身について
+```
+---- todoDB.sqlite3 #データベースファイル
+|
+|--- app.py         #サーバー用ファイル
+|--- templates
+    |--- first_page.html # categoryテーブルの一覧表示
+    |--- form_create_card.html #カテゴリカードを作成するためのフォーム
+    |--- form_update_card.html #カテゴリカードを変更するためのフォーム
+    |--- form_delete_card.html #カテゴリカードを削除するためのフォーム
+    |
+    |--- index.html            # todoリストの中身を一覧表示
+    |--- form_for_create.html  #todoリストを作成するためのフォーム
+    |--- form_for_update.html  #todoリストを変更するためのフォーム
+    |--- form_for_delete.html  #todoリストを削除するためのフォーム
+    |
+    |--- form_layout.html      #入力フォームの体裁を管理するhtmlファイル
+    |--- result.html           #フォーム送信後の結果を表示する画面
+
+
+```
 ### 用いるデータベースについて
 2つのデータベースを利用する
 ```
