@@ -1,0 +1,38 @@
+{% extends "form_layout.html" %}
+
+{% block title %}
+form create
+{% endblock %}
+
+
+{% block headline %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+
+<p class="text-center">変更するidとtodoを記入</p>
+<div class="row justify-content-center">
+    <form action="/update_card" method="post" >
+        <input type="number" required="required" name="ID" placeholder="id"/>
+        <input type="text" required="required" name="category" placeholder="category name"/>
+        <input type="submit"/>
+    </form>
+</div>
+
+<!-- 以下、データベースの一覧表示 -->
+<hr>
+    <h4 class="text-center">カテゴリ一覧</h4>
+    <table class="table">
+        <tr class="text-center">
+            <th>id</th>
+            <th>category</th>
+        </tr>
+        {% for dict in DATA %}
+        <tr class="text-center">
+            <td>{{dict.id}}</td> 
+            <td>{{dict.category}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

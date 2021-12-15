@@ -1,0 +1,50 @@
+<!-- <!DOCTYPE html>
+<html lang="ja"> -->
+    <!-- <body>
+        <p>create</p>
+        <form action="/create" method="post" >
+            <input type="text" name="TODO" placeholder="内容"/>
+            <input type="submit"/>
+        </form>
+    </body>
+</html>
+ -->
+{% extends "form_layout.html" %}
+
+{% block title %}
+form create
+{% endblock %}
+
+
+{% block headline %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+<p class="text-center">追加するtodoを記入</p>
+<div class="row justify-content-center">
+    <form action="/create" method="post" >
+        <input type="text" name="TODO" placeholder="内容"/>
+        <input type="number" name="category_name" placeholder="category_name"/>
+        <input type="submit" class="m-1 btn-secondary"/>
+    </form>
+</div>
+
+<!-- 以下、データベースの一覧表示 -->
+<hr>
+    <h3 class="text-center">ToDoリスト一覧</h3>
+    <table class="table">
+        <tr class="text-center">
+            <th>id</th>
+            <th>todo</th>
+            <td>category_name</td>
+        </tr>
+        {% for dict in DATA %}
+        <tr class="text-center">
+            <td>{{dict.id}}</td> 
+            <td>{{dict.todo}}</td>
+            <td>{{dict.category_name}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

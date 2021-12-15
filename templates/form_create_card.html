@@ -1,0 +1,36 @@
+{% extends "form_layout.html" %}
+
+{% block title %}
+form create
+{% endblock %}
+
+
+{% block headline %}
+{{ title }}
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <form action="/create_card" method="post" >
+        <input type="text" name="category" placeholder="card name"/>
+        <input type="submit"　class="m-1 btn-secondary"/>
+    </form>
+</div>
+
+<!-- 以下、データベースの一覧表示 -->
+<hr>
+    <h4 class="text-center">カテゴリ一覧</h4>
+    <table class="table">
+        <tr class="text-center">
+            <th>id</th>
+            <th>category</th>
+        </tr>
+        {% for dict in DATA %}
+        <tr class="text-center">
+            <td>{{dict.id}}</td> 
+            <td>{{dict.category}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

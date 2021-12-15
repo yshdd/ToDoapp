@@ -1,0 +1,20 @@
+
+<html lang="ja">
+    <body>
+        <h1>{{msg}} </h1>
+        <form action="/" method="get" id="return">
+            <button type="submit" form="return">カテゴリページに戻る</button>
+        </form>
+
+        {% if category_name %}
+        <!-- category_nameがカテゴリテーブル内に存在しない場合 -->
+            {% if flg%}
+            <form action="/read_db/{{category_name}}" methods="get" id="ret">
+                <button type="submit" form="ret">{{category_name}}カテゴリ内の一覧へ戻る</button>
+            </form>
+            {% endif %}
+            
+
+        {% endif %}
+    </body>
+</html>
