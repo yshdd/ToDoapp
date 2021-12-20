@@ -6,11 +6,12 @@
             <button type="submit" form="return">カテゴリページに戻る</button>
         </form>
 
-        {% if category_name %}
+        
+        {% if category_id %}
         <!-- category_nameがカテゴリテーブル内に存在しない場合 -->
             {% if flg%}
-            <form action="/read_db/{{category_name}}" methods="get" id="ret">
-                <button type="submit" form="ret">{{category_name}}カテゴリ内の一覧へ戻る</button>
+            <form action="/read_db/{{category_id}}" methods="get" id="ret">
+                <button type="submit" form="ret">{{category_id}}カテゴリ内の一覧へ戻る</button>
             </form>
             {% endif %}
             
