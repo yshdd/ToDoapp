@@ -19,12 +19,12 @@ class DB(Base):
     __tablename__ = "ToDoListWithCategory"
     id = Column(Integer, primary_key=True)
     todo = Column(String(255))
-    category_name = Column(String(255))
+    category_id = Column(Integer)
     def toDict(self):
         return {
             'id': int(self.id),
             'todo': str(self.todo),
-            'category_name':str(self.category_name)
+            'category_id':int(self.category_id)
         }
 
 class CategoryTable(Base):
@@ -39,11 +39,11 @@ class CategoryTable(Base):
         }
 
 
-def getDataBase(clss, filter=False):
+def getDataBase(clss, filterID=False):
     Session = sessionmaker(bind=ENGINE)
     ses = Session()
-    if filter != False:
-        res = ses.query(clss).filter(clss.category_name==filter).all()
+    if filterID:
+        res = ses.query(clss).filter(clss.category_id==int(filterID)).all()
     else:
         res = ses.query(clss).all()
     ses.close()
@@ -54,17 +54,6 @@ def getDataBase(clss, filter=False):
         List.append(Dict)
     return List
 
-def getAllCategory():
-    Session = sessionmaker(bind=ENGINE)
-    ses = Session()
-    res = ses.query(CategoryTable).all()
-    ses.close()
-    Set = set()
-    for item in res:
-        Dict = item.toDict() #DBオブジェクトを辞書型に変換
-        #Set.add(Dict["category"])
-        Set.add(Dict["id"])
-    return Set
 
 #最初の画面: データベースの一覧を表示
 @app.route('/')
@@ -75,13 +64,11 @@ def index():
     return render_template('first_page.html',
                             DATA=category_table)
 
-@app.route('/read_db/<category_name>')
-def read_DB(category_name):
-    print(f'enterd id: {category_name}')
-    #db = get_filteredRow(category_name)
-    category_name = str(category_name)
-    db = getDataBase(clss=DB, filter=category_name)
-    print(db)
+@app.route('/read_db/<category_id>')
+def read_DB(category_id):
+    print(f'enterd id: {category_id}')
+    #db = get_filteredRow(category_id)
+    db = getDataBase(clss=DB, filterID=category_id)
     return render_template('index.html',
                             title='TODOリスト',
                             DATA=db)
@@ -115,15 +102,15 @@ def form_update_card():
                             DATA=db)
 @app.route('/update_card', methods=["POST"])
 def update_card():
-    category_name = request.form.get("ID")
+    category_id = request.form.get("ID")
     new_category = request.form.get("category")
     with Session(ENGINE) as ses:
         data = ses.query(CategoryTable)\
-                .filter(CategoryTable.id==category_name).one_or_none()
+                .filter(CategoryTable.id==category_id).one_or_none()
         if data is None:
             return render_template(
                 "result.html",
-                msg=f"指定したid {category_name} は存在しません"
+                msg=f"There is no {id} in the category table"
             )
         data.category = new_category
         ses.add(data)
@@ -149,7 +136,7 @@ def delete_card():
         ses.close()
         return render_template(
             "result.html",
-            msg="指定したid: {} は存在しません.".format(id)
+            msg="ID: {} は存在しません.".format(id)
         )
     ses.delete(data)
     ses.commit()
@@ -172,8 +159,8 @@ def edit_for_create():
 #2. postされた内容をデータベースに追加
 @app.route('/create', methods=['POST'])
 def create():
-    new_todo = DB(todo=request.form["TODO"],category_name=request.form["category_name"])
-    category_name = request.form["category_name"]
+    new_todo = DB(todo=request.form["TODO"],category_id=request.form["category_id"])
+    category_id = request.form["category_id"]
     with Session(ENGINE) as session:
         session.add(new_todo)
         #追加したものを取り出す
@@ -181,7 +168,7 @@ def create():
     return render_template(
         'result.html',
         msg=f'{request.form["TODO"]}を create しました',
-        category_name=category_name)
+        category_id=category_id)
     
 
 ##update
@@ -199,27 +186,25 @@ def update():
     #リクエストからid, todo内容を抽出
     id = request.form.get("ID")
     new_todo = request.form.get("TODO")
-    category_name = request.form.get("category_name")
+    category_id = request.form.get("category_id")
     #データベースにアクセスして変更
     Session = sessionmaker(bind=ENGINE)
     ses = Session()
-    #filter関数ではidとcategory_nameのAND条件を適用
-    data = ses.query(DB).filter(DB.id==id, DB.category_name==category_name).one_or_none() #data.toDict["todo"]
+    data = ses.query(DB).filter(DB.id==str(id)).one_or_none() #data.toDict["todo"]
     #one_or_none(): 複数の場合は例外が返る
-    #存在しないIDを指定した場合
+    #ToDoListWithCategoryに存在しないIDを指定した場合
     if data is None:
         ses.close()
-        AllCategory = list(getAllCategory())
-        print(AllCategory, category_name)
-        if str(category_name) in str(AllCategory):
+        flg = False # フォームに記入したcategoty_idがcategoryに存在するか判定
+        db = getDataBase(clss=CategoryTable)
+        AllCategoryIds = [int(d["id"]) for d in db] #CategoryTable内のidを格納
+        # フォームに記入したcategoty_idがCategory内に存在する場合はTrue
+        if int(category_id) in AllCategoryIds:
             flg = True
-        else:
-            flg = False
-        print(flg)
         return render_template(
             "result.html",
             msg="ID: {} は存在しません.".format(id),
-            category_name=category_name,
+            category_id=category_id,
             flg = flg
         )
     data.todo = new_todo
@@ -229,7 +214,7 @@ def update():
     return render_template(
         'result.html',
         msg="id:{}を {} へ updateしました.".format(id, new_todo),
-        category_name=category_name
+        category_id=category_id
         )
 
 ## delete
@@ -245,25 +230,23 @@ def edit_for_delete():
 @app.route('/delete', methods=['POST'])
 def delete():
     id = request.form.get("ID")
-    category_name = request.form.get("category_name")
+    category_id = request.form.get("category_id")
     Session = sessionmaker(bind=ENGINE)
     ses = Session()
-    #id AND categiry_nameでフィルタ
-    data = ses.query(DB).filter(DB.id==id, DB.category_name==category_name).one_or_none()
+    data = ses.query(DB).filter(DB.id==str(id)).one_or_none()
     #存在しないidを入力した場合
     if data is None:
         ses.close()
-        AllCategory = list(getAllCategory())
-        print(AllCategory, category_name)
-        if str(category_name) in str(AllCategory):
+        flg = False # フォームに記入したcategoty_idがcategoryに存在するか判定
+        db = getDataBase(clss=CategoryTable)
+        AllCategoryIds = [int(d["id"]) for d in db] #CategoryTable内のidを格納
+        # フォームに記入したcategoty_idがCategory内に存在する場合はTrue
+        if int(category_id) in AllCategoryIds:
             flg = True
-        else:
-            flg = False
-        print(flg)
         return render_template(
             "result.html",
             msg="ID: {} は存在しません.".format(id),
-            category_name=category_name,
+            category_id=category_id,
             flg = flg
         )
     ses.delete(data)
@@ -272,7 +255,7 @@ def delete():
     return render_template(
         "result.html",
         msg="id:{} をdelete しました.".format(id),
-        category_name=category_name
+        category_id=category_id
         )
 
 if __name__ == '__main__':
