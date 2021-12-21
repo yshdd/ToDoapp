@@ -32,10 +32,10 @@
 ```
 ```
 テーブル名: ToDoListWithCategory
-| id |  todo  | category_name |
-| 1  |  朝食  |    ja         |
-| 2  | 　　帰宅  |    ja         |
-| 3  | lunch |    en         |
+| id |  todo  | category_id |
+| 1  |  朝食  |    1         |
+| 2  | 　　帰宅  |    1         |
+| 3  | lunch |    2         |
 ```
 前者の```categoryテーブル```はカテゴリカードを管理するためのデータベースで、後者の```ToDoListWithCategoryテーブル```はToDoListを管理するデータベースです。
 
