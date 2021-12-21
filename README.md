@@ -80,7 +80,7 @@ class DB(Base):
 ```python
 ##read機能
 GET  /  categoryテーブルの一覧表示、およびカードの作成・変更・削除ボタン
-GET /read_db/<category_name>    todoテーブルから指定のcategory_idを持つ行のみを抽出して表示
+GET /read_db/<category_id>    todoテーブルから指定のcategory_idを持つ行のみを抽出して表示
 
 ## create機能
 GET /form_create_card  カテゴリカードを作成するフォーム画面を表示
